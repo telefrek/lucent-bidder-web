@@ -22,7 +22,8 @@ class ExchangeSummary extends React.Component {
             exchange: this.props.exchange,
             current: currentJson,
             updated: false,
-            campaigns: this.props.campaigns
+            campaigns: this.props.campaigns,
+            creatives: this.props.creatives
         }
     }
 
@@ -73,7 +74,7 @@ class ExchangeSummary extends React.Component {
                     </div>
                     <div className="row">
                         <div className="container-fluid">
-                            <Campaigns campaigns={this.state.campaigns} />
+                            <Campaigns campaigns={this.state.campaigns} creatives={this.state.creatives} />
                         </div>
                     </div>
                     <button onClick={this.handleEdit} className="btn btn-primary">Edit</button>
@@ -173,6 +174,7 @@ class Exchange extends React.Component {
         this.state = {
             exchange: this.props.exchange,
             campaigns: campaigns,
+            creatives: this.props.creatives,
             updated: false
         }
     }
@@ -188,7 +190,7 @@ class Exchange extends React.Component {
                 {updatePanel}
                 <div className="panel panel-default">
                     <div className="panel-body">
-                        <ExchangeSummary exchange={this.state.exchange} campaigns={this.state.campaigns} onUpdate={this.onUpdate} />
+                        <ExchangeSummary exchange={this.state.exchange} campaigns={this.state.campaigns} creatives={this.state.creatives} onUpdate={this.onUpdate} />
                     </div>
                 </div>
                 <div className="panel panel-default">

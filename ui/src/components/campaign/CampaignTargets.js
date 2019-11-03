@@ -16,26 +16,31 @@ class CampaignTargets extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
 
         let targets = []
-        this.props.targets.forEach(t => targets.push(t));
+        let id = 0;
+        this.props.targets.forEach((t) => {
+            t['id'] = id++;
+            targets.push(t)
+        });
 
         this.state = {
             targets: targets,
             updated: false,
+            id: id
         }
     }
 
-    componentWillReceiveProps(newProps){
-        this.setState({updated: JSON.stringify(newProps.targets) !== JSON.stringify(this.state.targets)})
+    componentWillReceiveProps(newProps) {
+        this.setState({ updated: JSON.stringify(newProps.targets) !== JSON.stringify(this.state.targets) })
     }
 
     handleSubmit(e) {
         e.preventDefault();
         if (this.state.updated && this.props.onUpdate != null) {
             this.props.onUpdate(this.state.targets)
-            this.setState({ edit: false })
+            this.setState({ updated: false })
         }
         else
-            this.setState({ edit: false })
+            this.setState({ updated: false })
     }
 
     targetChanged(e) {
@@ -44,16 +49,40 @@ class CampaignTargets extends React.Component {
         this.setState({ targets: targets, updated: true })
     }
 
+    targetRemoved(e) {
+        let targets = this.state.targets
+        targets.splice(e.index, 1);
+        this.setState({ targets: targets, updated: true })
+    }
+
+    onAdd(e) {
+        let targets = this.state.targets
+        let id = this.state.id
+        targets.push({ id: id++ })
+        this.setState({ targets: targets, id: id, updated: true })
+    }
+
+    onCancel(e) {
+        let targets = []
+        this.props.targets.forEach((t) => {
+            targets.push(t)
+        });
+        this.setState({ targets: targets, updated: false })
+    }
+
     render() {
 
         var targets = [];
-        this.props.targets.forEach((target, i) => {
-            targets.push(<JsonTarget key={i} target={target} index={i} onChanged={this.targetChanged.bind(this)} />)
+        this.state.targets.forEach((target, i) => {
+            targets.push(<JsonTarget key={target.id} target={target} index={i} onChanged={this.targetChanged.bind(this)} onDelete={this.targetRemoved.bind(this)} />)
         });
 
         var submit = null;
-        if (this.state.updated)
+        var cancel = null;
+        if (this.state.updated) {
             submit = (<Button variant='success' type='submit'>Save</Button>)
+            cancel = (<Button variant='warning' onClick={this.onCancel.bind(this)}>Cancel</Button>)
+        }
 
         return (
             <Card>
@@ -64,8 +93,9 @@ class CampaignTargets extends React.Component {
                             <Form.Row>
                                 <Form.Group>
                                     <ButtonToolbar>
-                                        <Button variant='primary'>Add</Button>
+                                        <Button variant='primary' onClick={this.onAdd.bind(this)}>Add</Button>
                                         {submit}
+                                        {cancel}
                                     </ButtonToolbar>
                                 </Form.Group>
                             </Form.Row>

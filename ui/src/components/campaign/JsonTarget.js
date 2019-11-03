@@ -27,8 +27,7 @@ class JsonTarget extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        console.log(JSON.stringify(newProps.target))
-        this.setState({ updated: JSON.stringify(newProps.target) !== JSON.stringify(this.state.target) })
+        this.setState({ updated: JSON.stringify(newProps.target) !== JSON.stringify(this.state.target), index: newProps.index })
     }
 
     mapProperties(val) {
@@ -284,7 +283,11 @@ class JsonTarget extends React.Component {
             }>
                 <Card.Header>
                     <Form.Label>{entity + '.' + property + ' ' + operation}</Form.Label>
-                    <Button className="float-right text-white" variant='danger' size='sm'>x</Button>
+                    <Button className="float-right text-white" variant='danger' size='sm' onClick={(e) => {
+                        if (this.props.onDelete) {
+                            this.props.onDelete({ index: this.props.index })
+                        }
+                    }}>x</Button>
                 </Card.Header>
                 <Card.Body>
                     <Form.Row>

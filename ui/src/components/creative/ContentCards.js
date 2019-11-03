@@ -14,7 +14,6 @@ class ImageContentCard extends React.Component {
     }
 
     render() {
-        console.log(JSON.stringify(this.state.content.content_location.split('/').pop()))
         return (<Card>
             <Card.Header>
                 <Form.Label>{this.state.content.h}x{this.state.content.w}</Form.Label>

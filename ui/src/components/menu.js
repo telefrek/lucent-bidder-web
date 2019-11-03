@@ -43,7 +43,7 @@ class LucentMenu extends React.Component {
 
             switch (eventKey) {
                 case "Campaigns":
-                    ReactDOM.render(<Campaigns ceratives={this.state.creatives} campaigns={this.state.campaigns} creatives={this.state.creatives} />, document.getElementById('contents'));
+                    ReactDOM.render(<Campaigns creatives={this.state.creatives} campaigns={this.state.campaigns} creatives={this.state.creatives} />, document.getElementById('contents'));
                     break;
                 case "Exchanges":
                     ReactDOM.render(<Exchange exchange={this.state.exchange} campaigns={this.state.campaigns} creatives={this.state.creatives} />, document.getElementById('contents'));

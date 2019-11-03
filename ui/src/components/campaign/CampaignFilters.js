@@ -6,7 +6,7 @@ import Card from 'react-bootstrap/Card'
 import CardColumn from 'react-bootstrap/CardColumns'
 import Button from 'react-bootstrap/Button'
 import Accordion from 'react-bootstrap/Accordion'
-
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 
 class CampaignFilters extends React.Component {
 
@@ -15,42 +15,73 @@ class CampaignFilters extends React.Component {
 
         this.handleSubmit = this.handleSubmit.bind(this);
 
-        let currentJson = {}
-        if (this.props.campaign != null) {
-            currentJson['name'] = this.props.campaign.name;
-        }
+        let filters = []
+        let id = 0;
+        this.props.filters.forEach((t) => {
+            t['id'] = id++;
+            filters.push(t)
+        });
 
         this.state = {
-            summary: this.props.summary,
-            edit: false,
-            campaign: this.props.campaign,
-            current: currentJson,
-            updated: false
+            filters: filters,
+            updated: false,
+            id: id
         }
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.setState({ updated: JSON.stringify(newProps.filters) !== JSON.stringify(this.state.filters) })
     }
 
     handleSubmit(e) {
         e.preventDefault();
         if (this.state.updated && this.props.onUpdate != null) {
-            let campaign = this.state.campaign;
-            if (campaign == null) campaign = {}
-            campaign['name'] = this.state.current['name'];
-
-            this.props.onUpdate(campaign)
-            this.setState({ edit: false, campaign: campaign })
+            this.props.onUpdate(this.state.filters)
+            this.setState({ updated: false })
         }
         else
-            this.setState({ edit: false })
+            this.setState({ updated: false })
+    }
+
+    filterChanged(e) {
+        let filters = this.state.filters;
+        filters[e.index] = e.target;
+        this.setState({ filters: filters, updated: true })
+    }
+
+    filterRemoved(e) {
+        let filters = this.state.filters
+        filters.splice(e.index, 1);
+        this.setState({ filters: filters, updated: true })
+    }
+
+    onAdd(e) {
+        let filters = this.state.filters
+        let id = this.state.id
+        filters.push({ id: id++ })
+        this.setState({ filters: filters, id: id, updated: true })
+    }
+
+    onCancel(e) {
+        let filters = []
+        this.props.filters.forEach((t) => {
+            filters.push(t)
+        });
+        this.setState({ filters: filters, updated: false })
     }
 
     render() {
 
-        var filters = null;
-        if (this.state.campaign.hasOwnProperty('jsonFilters')) {
-            filters = []
-            this.state.campaign.jsonFilters.forEach((filter, i) => {
-                filters.push(<JsonTarget key={i} target={filter} index={i} />)
-            });
+        var filters = [];
+        this.state.filters.forEach((filter, i) => {
+            filters.push(<JsonTarget key={filter.id} target={filter} index={i} onChanged={this.filterChanged.bind(this)} onDelete={this.filterRemoved.bind(this)} />)
+        });
+
+        var submit = null;
+        var cancel = null;
+        if (this.state.updated) {
+            submit = (<Button variant='success' type='submit'>Save</Button>)
+            cancel = (<Button variant='warning' onClick={this.onCancel.bind(this)}>Cancel</Button>)
         }
 
         return (
@@ -61,7 +92,11 @@ class CampaignFilters extends React.Component {
                         <Form noValidate onSubmit={this.handleSubmit}>
                             <Form.Row>
                                 <Form.Group>
-                                    <Button variant='primary'>Add</Button>
+                                    <ButtonToolbar>
+                                        <Button variant='primary' onClick={this.onAdd.bind(this)}>Add</Button>
+                                        {submit}
+                                        {cancel}
+                                    </ButtonToolbar>
                                 </Form.Group>
                             </Form.Row>
                             <Form.Row>

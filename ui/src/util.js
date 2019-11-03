@@ -96,8 +96,6 @@ export const fromUICampaign = (uiCampaign) => {
     if (campaign.budgetSchedule != null)
         campaign.budgetSchedule.type = toScheduleType(uiCampaign.budgetSchedule.type);
 
-    console.log('sending: ' + JSON.stringify(campaign))
-
     return campaign;
 }
 
@@ -105,8 +103,6 @@ export const toUICampaign = (campaign) => {
     if (campaign == null) return null;
 
     let uiCampaign = { ...campaign }
-
-    console.log(JSON.stringify(uiCampaign));
 
     if (uiCampaign.status != null)
         uiCampaign.status = fromCampaignStatus(campaign.status);
@@ -151,7 +147,6 @@ export const getAllCampaigns = () => {
 }
 
 export const createCampaign = (campaign) => {
-    console.log(JSON.stringify(campaign));
     return Axios.post('https://orchestration.lucentbid.com/api/campaigns', fromUICampaign(campaign)).then((resp) => {
         if (resp.status === 201) {
             let campaign = resp.data
